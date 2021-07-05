@@ -56,6 +56,7 @@ const int RIGHT_PHOTO = A3;
 const int MINIMAL_DIFF_LIGHT = 1000;
 
 // Global Variables
+
 // Variable to hold the reads of the middle photoresistor
 int middleSensorVal = 0;
 // Variable to hold the minimal read of the middle photoresistor
@@ -129,135 +130,88 @@ void setup() {
 void loop() {
   // Read the photoresistors values
   readPhotoSensor();
+
+  // Define the distance variable to hold the distance from the car to the object
+  float dist;
   
   // Is the middle photoresistor receiving more light than the right and left one?
   if((middleSensorVal-leftSensorVal)>MINIMAL_DIFF_LIGHT and 
      (middleSensorVal-rightSensorVal)>MINIMAL_DIFF_LIGHT) {
-    // Is the previous path the middle one? (middle == true)
-    if(middle) {
-      // Read the ultrasound to determine if there is an object and determine its
-      // distance to the car
-      float dist = readUltrasound();
-      // Verify the distance to the object
-      verifDist(dist);
-      // Is not there an object close enough to the car? (!object == true)
-      if(!object) {
-        // Move the car forward
-        goForward();
-        // Indicates that the current path is not the left one
-        left = false;
-        // Indicates that the current path is the middle one
-        middle = true;
-        // Indicates that the current path is not the right one
-        right = false;
-      }
-    } else { // The previous path is not the middle one
+    // Is the previous path not the middle one? (!middle == true)
+    if(!middle) {
       // Stop the car
       motorStop();
       // Move the servo motor to its default position
       servoDefault();
-      // Read the ultrasound to determine if there is an object and determine its
-      // distance to the car
-      float dist = readUltrasound();
-      // Verify the distance to the object
-      verifDist(dist);
-      // Is not there an object close enough to the car? (!object == true)
-      if(!object) {
-        // Move the car forward
-        goForward();
-        // Indicates that the current path is not the left one
-        left = false;
-        // Indicates that the current path is the middle one
-        middle = true;
-        // Indicates that the current path is not the right one
-        right = false;
-      }
     }
+    // Read the ultrasound to determine if there is an object and determine its
+    // distance to the car
+    dist = readUltrasound();
+    // Verify the distance to the object
+    verifDist(dist);
+    // Is not there an object close enough to the car? (!object == true)
+    if(!object) {
+      // Move the car forward
+      goForward();
+      // Indicates that the current path is not the left one
+      left = false;
+      // Indicates that the current path is the middle one
+      middle = true;
+      // Indicates that the current path is not the right one
+      right = false;
+    }
+
   // Is the left photoresistor receiving more light than the middle and right one?
   } else if((leftSensorVal-middleSensorVal)>MINIMAL_DIFF_LIGHT  and 
           (leftSensorVal-rightSensorVal)>MINIMAL_DIFF_LIGHT) {
-    // Is the previous path the left one? (left == true)   
-    if(left) {
-      // Read the ultrasound to determine if there is an object and determine its
-      // distance to the car
-      float dist = readUltrasound();
-      // Verify the distance to the object
-      verifDist(dist);
-      // Is not there an object close enough to the car? (!object == true)
-      if(!object) {
-        // Move the car to the left side
-        turnLeft();
-        // Indicates that the current path is the left one
-        left = true;
-        // Indicates that the current path is not the middle one
-        middle = false;
-        // Indicates that the current path is not the right one
-        right = false;
-      }
-    } else { // The previous path is not the left one
+    // Is the previous path not the left one? (!left == true)
+    if(!left) {
       // Stop the car
       motorStop();
       // Turn the servo motor to the left side
       servoTurnLeft();
-      // Read the ultrasound to determine if there is an object and determine its
-      // distance to the car
-      float dist = readUltrasound();
-      // Verify the distance to the object
-      verifDist(dist);
-      // Is not there an object close enough to the car? (!object == true)
-      if(!object) {
-        // Move the car to the left side
-        turnLeft();
-        // Indicates that the current path is the left one
-        left = true;
-        // Indicates that the current path is not the middle one
-        middle = false;
-        // Indicates that the current path is not the right one
-        right = false;
-      }
+    }
+    // Read the ultrasound to determine if there is an object and determine its
+    // distance to the car
+    dist = readUltrasound();
+    // Verify the distance to the object
+    verifDist(dist);
+    // Is not there an object close enough to the car? (!object == true)
+    if(!object) {
+      // Move the car to the left side
+      turnLeft();
+      // Indicates that the current path is the left one
+      left = true;
+      // Indicates that the current path is not the middle one
+      middle = false;
+      // Indicates that the current path is not the right one
+      right = false;
     }
   // Is the right photoresistor receiving more light than the middle and left one?
   } else if((rightSensorVal-middleSensorVal)>MINIMAL_DIFF_LIGHT and 
           (rightSensorVal-leftSensorVal)>MINIMAL_DIFF_LIGHT)  {
-    // Is the previous path the right one? (right == true)   
-    if(right) {
-      // Read the ultrasound to determine if there is an object and determine its
-      // distance to the car
-      float dist = readUltrasound();
-      // Verify the distance to the object
-      verifDist(dist);
-      // Is not there an object close enough to the car? (!object == true)
-      if(!object) {
-        // Turn the car to the right
-        turnRight();
-        // Indicates that the current path is not the left one
-        left = false;
-        // Indicates that the current path is not the middle one
-        middle = false;
-        // Indicates that the current path is the right one
-        right = true;
-      }
-    } else {
+    // Is the previous path not the right one? (!right == true)
+    if(!right) {
       // Stop the car
       motorStop();
       // Turn the servo motor to the right
       servoTurnRight();
-      // Read the ultrasound to determine if there is an object and determine its
-      // distance to the car 
-      float dist = readUltrasound();
-      // Verify the distance to the object
-      verifDist(dist);
-      // Is not there an object close enough to the car? (!object == true)
-      if(!object) {
-        // Turn the car to the right
-        turnRight();
-        // Indicates that the current path is not the left one
-        left = false;
-        // Indicates that the current path is not the middle one
-        middle = false;
-        // Indicates that the current path is the right one
-        right = true;
-      }
+    } 
+    // Read the ultrasound to determine if there is an object and determine its
+    // distance to the car 
+    dist = readUltrasound();
+    // Verify the distance to the object
+    verifDist(dist);
+    // Is not there an object close enough to the car? (!object == true)
+    if(!object) {
+      // Turn the car to the right
+      turnRight();
+      // Indicates that the current path is not the left one
+      left = false;
+      // Indicates that the current path is not the middle one
+      middle = false;
+      // Indicates that the current path is the right one
+      right = true;
     }
   } else { // All photoresistors' values are the same
     // Move the servo motor to its default position
@@ -266,7 +220,7 @@ void loop() {
     motorStop();
     // Read the ultrasound to determine if there is an object and determine its
     // distance to the car 
-    float dist = readUltrasound();
+    dist = readUltrasound();
     // Verify the distance to the object
     verifDist(dist);
     // Messages for debugging purpose
